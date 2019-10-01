@@ -47,11 +47,10 @@ int main(){
 		printf("/client is connected\n");
 		printf("클라이언트 접속 허용\n");
 
-		read(c_socket, rcvBuffer, sizeof(rcvBuffer));
+		n = read(c_socket, rcvBuffer, sizeof(rcvBuffer));
 		printf("rcvBuffer : %s\n",rcvBuffer);
 
-		n = strlen(buffer);
-		write(c_socket, buffer, n); //클라이언트에게 buffer의 내용을 전송함
+		write(c_socket, rcvBuffer, n); //클라이언트에게 buffer의 내용을 전송함
 
 		close(c_socket);
 	}

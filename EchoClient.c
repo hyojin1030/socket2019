@@ -31,6 +31,10 @@ int main(){
 	}
 
 	//서버에 메세지 보내기(추가)
+	//키보드로 메세지 입력 받기
+	fgets(sendBuffer, sizeof(sendBuffer),stdin); //stdin을 사용해서 키보드로 메세지 입력받을 수 있다.
+
+	//입력받은 메세지 서버로 보내기
 	write(c_socket, sendBuffer, strlen(sendBuffer));
 
 
