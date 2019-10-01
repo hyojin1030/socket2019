@@ -53,7 +53,7 @@ int main(){
 			n = read(c_socket, rcvBuffer, sizeof(rcvBuffer));
 			printf("rcvBuffer : %s\n",rcvBuffer);
 
-			if(strncasecmp(rcvBuffer, "quit", 4) || strncasecmp(rcvBuffer, "kill server", 11) == 0){
+			if(strncasecmp(rcvBuffer, "quit", 4) == 0 || strncasecmp(rcvBuffer, "kill server", 11) == 0){
 				break;
 			}
 

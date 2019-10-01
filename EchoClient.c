@@ -40,7 +40,7 @@ int main(){
 		write(c_socket, sendBuffer, strlen(sendBuffer));
 	
 		//입력받은 메세지가 quit이면 break
-		if(strncasecmp(sendBuffer, "quit", 4) || strncasecmp(sendBuffer, "kill server", 11) == 0){
+		if(strncasecmp(sendBuffer, "quit", 4) == 0 || strncasecmp(sendBuffer, "kill server", 11) == 0){
 			break;
 		}
 		
