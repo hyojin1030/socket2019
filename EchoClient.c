@@ -12,8 +12,7 @@ int main(){
 	struct sockaddr_in c_addr;
 	int n;
 	char rcvBuffer[BUFSIZE];//서버에서 보내준 메세지를 저장하는 변수
-	char sendBuffer[BUFSIZE]="Hi, I'm Client.";
-	
+	char sendBuffer[BUFSIZE] = "Hi, I'm client.";
 	//1. 클라이언트 소켓 생성
 	c_socket = socket(PF_INET, SOCK_STREAM, 0); //서버와 동일한 설정으로 생성
 	//2.소켓 정보 초기화
@@ -29,22 +28,16 @@ int main(){
 		close(c_socket); //자원 회수
 		return -1;  //프로세스 종료
 	}
-
 	while(1){
-
-		//서버에 메세지 보내기(추가)
-		//키보드로 메세지 입력 받기
-		fgets(sendBuffer, sizeof(sendBuffer),stdin); //stdin을 사용해서 키보드로 메세지 입력받을 수 있다.
-
-		//입력받은 메세지 서버로 보내기
+		//4. 서버에 메시지 보내기 
+		//키보드로부터 메세지 입력 받기
+		fgets(sendBuffer, sizeof(sendBuffer), stdin);
+		//서버로 메세지 전송
 		write(c_socket, sendBuffer, strlen(sendBuffer));
-	
-		//입력받은 메세지가 quit이면 break
-		if(strncasecmp(sendBuffer, "quit", 4) == 0 || strncasecmp(sendBuffer, "kill server", 11) == 0){
+		//입력받은 메세지가 quit 이면  break
+		if(strncasecmp(sendBuffer, "quit", 4) == 0 || strncasecmp(sendBuffer, "kill server", 11) == 0)
 			break;
-		}
-		
-		//4. 서버에서 보낸 메시지 읽기 
+		//5. 서버에서 보낸 메시지 읽기 
 		n = read(c_socket, rcvBuffer, sizeof(rcvBuffer)); 
 		//서버에서 보내준 메세지를 rcvBuffer에 저장하고, 메세지의 길이를 리턴
 		//만약 read에 실패하면, -1을 리턴
