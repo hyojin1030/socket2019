@@ -8,13 +8,14 @@
 
 #define PORT 10000
 #define BUFSIZE 10000
-void do_service(int c_socket);
-void sig_handler(int signo);
 char buffer[BUFSIZE] = "Hi, I'm server.\n";
 // sizeof(buffer) => 100 (배열의 크기)
 // strlen(buffer) => 15 (buffer에 저장된 문자열의 길이)
 char rcvBuffer[BUFSIZE];
 int numClient = 0;
+
+void do_service(int c_socket);
+void sig_handler();
 
 int main(){
 	int c_socket, s_socket;
@@ -22,8 +23,7 @@ int main(){
 	int len;
 	int n;
 
-	signal(SIGCHLD, sig_handler); //첫번째 인자 : 시그널 번호, 두번째 인자 : 첫번째 인자의 시그널이 발생했을 때 실행되는 함수
-
+	signal(SIGCHLD, sig_handler); //첫번째 인자: 시그널번호, 두번째 인자: 첫번째 인자의 시그널이 발생했을 때 실행되는 함수
 
 	// 1. 서버 소켓 생성
 	//서버 소켓 = 클라이언트의 접속 요청을 처리(허용)해 주기 위한 소켓
@@ -57,24 +57,22 @@ int main(){
 		//클라이언트의 요청이 오면 허용(accept)해 주고, 해당 클라이언트와 통신할 수 있도록 클라이언트 소켓(c_socket)을 반환함.
 		printf("/client is connected\n");
 		numClient++;
-		printf("현재 접속 중인 클라이언트 수 : %d\n", numClient);
+		printf("현재 접속 중인 클라이언트 수: %d\n", numClient);
 
 		int pid = fork();
-		if(pid > 0 ){	//부모 프로세스
+		if(pid > 0){ //부모 프로세스
 			continue;
-		}else if(pid == 0){	//자식 프로세스
+		}else if (pid == 0){ //자식프로세스
 			do_service(c_socket);
-			numClient--;
-			exit(0);	
-		}else{
+			exit(0);
+		}else{ //fork() 함수 실패
 			printf("fork() failed\n");
 			exit(0);
 		}
-	
+		
 	}
 	close(s_socket);
 	return 0;	
-	
 }
 
 void do_service(int c_socket){
@@ -112,7 +110,7 @@ void do_service(int c_socket){
 				sprintf(buffer, "%s와 %s는 같은 문자열입니다.",  str[1], str[2]);
 			else
 				sprintf(buffer, "%s와 %s는 다른 문자열입니다.",  str[1], str[2]);
-	
+			
 		}else if (!strncasecmp(rcvBuffer, "readfile ", strlen("readfile "))) {
 			char *token;
 			char *str[10];
@@ -149,19 +147,21 @@ void do_service(int c_socket){
 				sprintf(buffer, "[%s] 명령어가 성공했습니다.", command);
 			else
 				sprintf(buffer, "[%s] 명령어가 실패했습니다.", command);
-	
+			
 		}else
 			strcpy(buffer, "무슨 말인지 모르겠습니다.");
-	
+			
 		write(c_socket, buffer, strlen(buffer)); //클라이언트에게 buffer의 내용을 전송함
 	}
-}
 
+	close(c_socket);
+}
 void sig_handler(int signo){
-	int pid, status;
+	int pid;
+	int status;
 	pid = wait(&status);
-	printf("pid[%d] is terminated.status = %d\n",pid,status);
+	printf("pid[%d] is terminated.status = %d\n", pid,status);
 	numClient--;
-	printf("현재 접속 중인 클라이언트 수 : %d\n",numClient);
-
+	printf("현재 접속 중인 클라이언트 수: %d\n", numClient);
 }
+
