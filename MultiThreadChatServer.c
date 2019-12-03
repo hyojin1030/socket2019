@@ -6,9 +6,9 @@
 #include <sys/socket.h>
 #include <pthread.h>
 
-void *do_chat(void *);
-int pushClient(int, char *);
-int popClient(int);
+void *do_chat(void *);	//채팅 메세지를 보내는 함수
+int pushClient(int, char *);  //새로운 클라이언트가 접속했을 때 클라이언트 정보 추가
+int popClient(int);	// 클라이언트가 종료했을 때 클라이언트 정보 삭
 pthread_t thread;
 pthread_mutex_t mutex;
 
@@ -22,7 +22,7 @@ pthread_mutex_t mutex;
 struct chatClient{
 	int c_socket;
 	char nickname[CHATDATA];
-};
+};제
 struct chatClient clientList[MAX_CLIENT];
 char	escape[ ] = "exit";
 char	greeting[ ] = "Welcome to chatting room\n";
@@ -65,10 +65,10 @@ int main(int argc, char *argv[ ])
 			return -1;
 		}	
 		res = pushClient(c_socket, nickname);
-		if(res < 0) {
+		if(res < 0) {	//MAX_CLIENT 만큼 이미 클라이언트가 접속해 있을 때 출력
 			write(c_socket, CODE200, strlen(CODE200));
 			close(c_socket);
-		} else {
+		} else { //환영 메세지 출력
 			write(c_socket, greeting, strlen(greeting));
 			pthread_create(&thread, NULL, do_chat, (void *) &c_socket);
 		}
@@ -86,15 +86,15 @@ void *do_chat(void *arg)
 			char *token = NULL;
 			char *nickname = NULL;
 			char *message = NULL;
-			if(strncasecmp(chatData, WHISPER, 2) == 0){	
-				token = strtok(chatData, DELIMETER); // \w
-				nickname = strtok(NULL, DELIMETER); //nickname
-				message = strtok(NULL, "\0"); 
+			if(strncasecmp(chatData, WHISPER, 2) == 0){	// 귓속말 보내기
+				token = strtok(chatData, DELIMETER);
+				nickname = strtok(NULL, DELIMETER);
+				message = strtok(NULL, "\0"); // 문자열을 띄어쓰기를 기준으로 구분
 			}
 			for(i = 0; i < MAX_CLIENT; i++) {
 				if(clientList[i].c_socket != INVALID_SOCK) {
 					if(nickname != NULL){
-						if(strcasecmp(clientList[i].nickname, nickname) == 0)
+						if(strcasecmp(clientList[i].nickname, nickname) == 0) //귓속말 받는 사람을 찾아 내용을 보여줌
 							write(clientList[i].c_socket, message, strlen(message));
 					}else{
 						write(clientList[i].c_socket, chatData, n);
@@ -104,12 +104,12 @@ void *do_chat(void *arg)
 			if(strstr(chatData, escape) != NULL) {
 				popClient(c_socket);
 				break;
-			}
+			} //exit 입력하면 종료
 		}
 	}
 }
 
-int pushClient(int c_socket, char *nickname) {
+int pushClient(int c_socket, char *nickname) { //클라이언트 추가
 	int i;
 	for(i = 0; i < MAX_CLIENT; i++) {
 		if(clientList[i].c_socket == INVALID_SOCK) {
@@ -125,7 +125,7 @@ int pushClient(int c_socket, char *nickname) {
 		return -1;
 }		
 
-int popClient(int c_socket)
+int popClient(int c_socket) //클라이언트 삭제
 {			
 	int i;	 
 	close(c_socket); 
